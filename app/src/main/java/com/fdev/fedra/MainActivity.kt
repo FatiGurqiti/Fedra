@@ -3,13 +3,17 @@ package com.fdev.fedra
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.fdev.fedra.domain.models.BottomNavItem
+import com.fdev.fedra.ui.Navigation
+import com.fdev.fedra.ui.navigation.BottomNavigationBar
+import com.fdev.fedra.ui.navigation.Screens
 import com.fdev.fedra.ui.theme.FedraTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,27 +21,43 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FedraTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Greeting("Android")
-                }
+                BottomNavBar()
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    FedraTheme {
-        Greeting("Android")
+    @Composable
+    fun BottomNavBar() {
+        val navController = rememberNavController()
+        Scaffold(bottomBar = {
+            BottomNavigationBar(
+                items = listOf(
+                    BottomNavItem(
+                        "Home",
+                        Screens.HomeScreen.route,
+                        Icons.Default.Home,
+                    ),
+                    BottomNavItem(
+                        "Post",
+                        Screens.PostScreen.route,
+                        Icons.Default.Add
+                    ),
+                    BottomNavItem(
+                        "Profile",
+                        Screens.ProfileScreen.route,
+                        Icons.Default.Person,
+                        5
+                    ),
+                ),
+                navController = navController,
+                modifier = Modifier.fillMaxWidth(),
+                onClickEvent = {
+                    navController.navigate(it.route)
+                }
+            )
+        }, content = {
+            it.calculateBottomPadding()
+            Navigation(navController = navController)
+        })
     }
 }
