@@ -1,20 +1,36 @@
 package com.fdev.fedra.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Text
+import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.fdev.fedra.R
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    val dummyPhotos = arrayListOf(R.drawable.foto_0, R.drawable.foto_1, R.drawable.foto_2)
+    val pagerState = rememberPagerState()
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(text = "home screen")
+        VerticalPager(
+            pageCount = dummyPhotos.size,
+            state = pagerState,
+            key = { dummyPhotos[it] }
+        ) { index ->
+            Image(
+                painter = painterResource(id = dummyPhotos[index]),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
     }
 }
