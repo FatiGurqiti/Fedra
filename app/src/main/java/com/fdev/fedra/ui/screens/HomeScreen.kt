@@ -60,25 +60,26 @@ fun HomeScreen() {
                     verticalArrangement = Arrangement.Bottom,
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-
-                        Spacer(modifier = Modifier.fillMaxSize(0.05f))
-
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(PaddingValues(15.dp, 5.dp, 0.dp, 0.dp)),
+                    verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = dummyPhotos[index]),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
-                                .fillMaxWidth(0.21f)
-                                .fillMaxHeight(0.08f)
+                                .fillMaxWidth(0.158f)
+                                .fillMaxHeight(0.06f)
                                 .clip(CircleShape)
                                 .border(2.dp, Color.Green, CircleShape)
                         )
+                        
+                        Spacer(modifier = Modifier.fillMaxWidth(0.05f))
 
                         Text(
                             text = "$index Username",
                             color = Color.White,
-                            modifier = Modifier.padding(PaddingValues(20.dp, 20.dp, 0.dp, 0.dp)),
                             fontSize = 18.sp
                         )
 
@@ -86,16 +87,20 @@ fun HomeScreen() {
                     Text(
                         text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
                         color = Color.White,
-                        modifier = Modifier.padding(10.dp),
+                        modifier = Modifier.padding(PaddingValues(20.dp, 10.dp, 0.dp, 0.dp)),
                         fontSize = 14.sp
                     )
 
-                    Row(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(PaddingValues(15.dp, 5.dp, 5.dp, 0.dp)),
+                        verticalAlignment = Alignment.Bottom
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.LocationOn,
                             tint = Color.White,
-                            contentDescription = null,
-                            modifier = Modifier.padding(PaddingValues(10.dp, 0.dp, 10.dp, 0.dp)),
+                            contentDescription = null
                         )
 
                         Text(
@@ -136,7 +141,7 @@ fun HomeScreen() {
                     }
 
                     IconButton(onClick = {
-                        Toast.makeText(context,"You opened comments",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "You opened comments", Toast.LENGTH_SHORT).show()
                     }) {
                         Image(
                             painter = painterResource(id = R.drawable.comment),
@@ -147,9 +152,11 @@ fun HomeScreen() {
                         )
                     }
 
-                    IconButton(onClick = {
-                        Toast.makeText(context,"99 peple has seen this",Toast.LENGTH_SHORT).show()
-                    },
+                    IconButton(
+                        onClick = {
+                            Toast.makeText(context, "99 peple has seen this", Toast.LENGTH_SHORT)
+                                .show()
+                        },
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Person,
