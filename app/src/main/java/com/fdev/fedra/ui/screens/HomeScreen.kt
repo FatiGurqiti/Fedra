@@ -40,7 +40,6 @@ fun HomeScreen() {
             state = pagerState,
             key = { dummyPhotos[it] }
         ) { index ->
-            var isLiked by remember { mutableStateOf(false) }
             Box(modifier = Modifier.fillMaxSize()) {
                 Image(
                     painter = painterResource(id = dummyPhotos[index]),
@@ -57,7 +56,7 @@ fun HomeScreen() {
                         .zIndex(3f)
                         .fillMaxSize()
                 ) {
-                    val (column, likeIcon, commentIcon) = createRefs()
+                    val (column, commentIcon) = createRefs()
                     Column(
                         modifier = Modifier
                             .fillMaxHeight()
@@ -129,31 +128,12 @@ fun HomeScreen() {
                         )
                     }
 
-                    IconButton(
-                        onClick = {
-                            isLiked = !isLiked
-                        },
+                    CommentBottomSheet(
                         modifier = Modifier
-                            .zIndex(4f)
-                            .constrainAs(likeIcon) {
+                            .constrainAs(commentIcon) {
                                 end.linkTo(parent.end)
-                                bottom.linkTo(commentIcon.bottom, margin = 50.dp)
-                            }
-                    )
-                    {
-                        Icon(
-                            imageVector = if (isLiked) Icons.Filled.Favorite
-                            else Icons.Filled.FavoriteBorder,
-                            tint = if (isLiked) Color.Red else Color.White,
-                            contentDescription = null,
-                        )
-                    }
-
-                    CommentBottomSheet(modifier = Modifier
-                        .constrainAs(commentIcon) {
-                            end.linkTo(parent.end)
-                            bottom.linkTo(parent.bottom, margin = 50.dp)
-                        }, drawerState
+                                bottom.linkTo(parent.bottom, margin = 50.dp)
+                            }, drawerState
                     )
                 }
             }
@@ -183,6 +163,7 @@ fun GradientBackground() {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CommentBottomSheet(modifier: Modifier, drawerState: BottomDrawerState) {
+    var isLiked by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     BottomDrawer(
         modifier = modifier,
@@ -209,11 +190,25 @@ fun CommentBottomSheet(modifier: Modifier, drawerState: BottomDrawerState) {
             }
         },
         content = {
-            Row(
+            Column(
                 modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.Bottom
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Bottom
             ) {
+                IconButton(
+                    onClick = {
+                        isLiked = !isLiked
+                    },
+                )
+                {
+                    Icon(
+                        imageVector = if (isLiked) Icons.Filled.Favorite
+                        else Icons.Filled.FavoriteBorder,
+                        tint = if (isLiked) Color.Red else Color.White,
+                        contentDescription = null,
+                    )
+                }
+
                 IconButton(
                     onClick = {
                         scope.launch { drawerState.open() }
@@ -224,8 +219,18 @@ fun CommentBottomSheet(modifier: Modifier, drawerState: BottomDrawerState) {
                         contentDescription = null
                     )
                 }
-            }
 
+                IconButton(
+                    onClick = {
+
+                    }) {
+                    Icon(
+                        imageVector = Icons.Filled.Person,
+                        tint = Color.White,
+                        contentDescription = null
+                    )
+                }
+            }
         }
     )
 }
