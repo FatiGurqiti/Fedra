@@ -1,16 +1,14 @@
 package com.fdev.fedra.ui.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.twotone.Favorite
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,19 +16,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.fdev.fedra.R
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
+@Preview
 fun HomeScreen() {
-    val context = LocalContext.current
     val dummyPhotos = arrayListOf(R.drawable.foto_0, R.drawable.foto_1, R.drawable.foto_2)
     val pagerState = rememberPagerState()
+    val drawerState = rememberBottomDrawerState(BottomDrawerValue.Closed)
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -40,7 +41,6 @@ fun HomeScreen() {
             key = { dummyPhotos[it] }
         ) { index ->
             var isLiked by remember { mutableStateOf(false) }
-
             Box(modifier = Modifier.fillMaxSize()) {
                 Image(
                     painter = painterResource(id = dummyPhotos[index]),
@@ -52,126 +52,108 @@ fun HomeScreen() {
 
                 GradientBackground()
 
-                Column(
+                ConstraintLayout(
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .fillMaxWidth(0.8f)
-                        .zIndex(3f),
-                    verticalArrangement = Arrangement.Bottom,
-                    horizontalAlignment = Alignment.Start
+                        .zIndex(3f)
+                        .fillMaxSize()
                 ) {
-                    Row(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(PaddingValues(15.dp, 5.dp, 0.dp, 0.dp)),
-                    verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = dummyPhotos[index]),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .fillMaxWidth(0.158f)
-                                .fillMaxHeight(0.06f)
-                                .clip(CircleShape)
-                                .border(2.dp, Color.Green, CircleShape)
-                        )
-                        
-                        Spacer(modifier = Modifier.fillMaxWidth(0.05f))
-
-                        Text(
-                            text = "$index Username",
-                            color = Color.White,
-                            fontSize = 18.sp
-                        )
-
-                    }
-                    Text(
-                        text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-                        color = Color.White,
-                        modifier = Modifier.padding(PaddingValues(20.dp, 10.dp, 0.dp, 0.dp)),
-                        fontSize = 14.sp
-                    )
-
-                    Row(
+                    val (column, likeIcon, commentIcon) = createRefs()
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(PaddingValues(15.dp, 5.dp, 5.dp, 0.dp)),
-                        verticalAlignment = Alignment.Bottom
+                            .fillMaxHeight()
+                            .fillMaxWidth(0.8f)
+                            .constrainAs(column) {
+                                start.linkTo(parent.start)
+                                bottom.linkTo(parent.bottom)
+                            },
+                        verticalArrangement = Arrangement.Bottom,
+                        horizontalAlignment = Alignment.Start
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.LocationOn,
-                            tint = Color.White,
-                            contentDescription = null
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(PaddingValues(15.dp, 5.dp, 0.dp, 0.dp)),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(id = dummyPhotos[index]),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxWidth(0.158f)
+                                    .fillMaxHeight(0.06f)
+                                    .clip(CircleShape)
+                                    .border(2.dp, Color.Green, CircleShape)
+                            )
 
+                            Spacer(modifier = Modifier.fillMaxWidth(0.05f))
+
+                            Text(
+                                text = "$index Username",
+                                color = Color.White,
+                                fontSize = 18.sp
+                            )
+
+                        }
                         Text(
-                            text = "Kurila, Prizren",
+                            text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
                             color = Color.White,
-                            fontSize = 16.sp
+                            modifier = Modifier.padding(PaddingValues(20.dp, 10.dp, 0.dp, 0.dp)),
+                            fontSize = 14.sp
                         )
 
-                    }
-
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(.1f)
-                    )
-                }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .zIndex(3f),
-                    verticalArrangement = Arrangement.Bottom,
-                    horizontalAlignment = Alignment.End
-                ) {
-
-                    IconButton(onClick = {
-                        isLiked = !isLiked
-                    }) {
-                        Icon(
-                            imageVector = if (isLiked) Icons.Filled.Favorite
-                            else Icons.Filled.FavoriteBorder,
-                            tint = if (isLiked) Color.Red else Color.White,
-                            contentDescription = null,
+                        Row(
                             modifier = Modifier
-                                .fillMaxSize(0.1f)
-                                .padding(PaddingValues(0.dp, 0.dp, 10.dp, 0.dp))
-                        )
-                    }
+                                .fillMaxWidth()
+                                .padding(PaddingValues(15.dp, 5.dp, 5.dp, 0.dp)),
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.LocationOn,
+                                tint = Color.White,
+                                contentDescription = null
+                            )
 
-                    IconButton(onClick = {
-                        Toast.makeText(context, "You opened comments", Toast.LENGTH_SHORT).show()
-                    }) {
-                        Image(
-                            painter = painterResource(id = R.drawable.comment),
-                            contentDescription = null,
+                            Text(
+                                text = "Kurila, Prizren",
+                                color = Color.White,
+                                fontSize = 16.sp
+                            )
+
+                        }
+
+                        Spacer(
                             modifier = Modifier
-                                .fillMaxSize(0.1f)
-                                .padding(PaddingValues(0.dp, 0.dp, 10.dp, 0.dp))
+                                .fillMaxWidth()
+                                .fillMaxHeight(.1f)
                         )
                     }
 
                     IconButton(
                         onClick = {
-                            Toast.makeText(context, "99 peple has seen this", Toast.LENGTH_SHORT)
-                                .show()
+                            isLiked = !isLiked
                         },
-                    ) {
+                        modifier = Modifier
+                            .zIndex(4f)
+                            .constrainAs(likeIcon) {
+                                end.linkTo(parent.end)
+                                bottom.linkTo(commentIcon.bottom, margin = 50.dp)
+                            }
+                    )
+                    {
                         Icon(
-                            imageVector = Icons.Filled.Person,
-                            tint = Color.White,
+                            imageVector = if (isLiked) Icons.Filled.Favorite
+                            else Icons.Filled.FavoriteBorder,
+                            tint = if (isLiked) Color.Red else Color.White,
                             contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize(0.1f)
-                                .padding(PaddingValues(0.dp, 0.dp, 10.dp, 0.dp))
                         )
                     }
 
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(.1f)
+                    CommentBottomSheet(modifier = Modifier
+                        .constrainAs(commentIcon) {
+                            end.linkTo(parent.end)
+                            bottom.linkTo(parent.bottom, margin = 50.dp)
+                        }, drawerState
                     )
                 }
             }
@@ -196,4 +178,54 @@ fun GradientBackground() {
                 .zIndex(2f)
         )
     }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun CommentBottomSheet(modifier: Modifier, drawerState: BottomDrawerState) {
+    val scope = rememberCoroutineScope()
+    BottomDrawer(
+        modifier = modifier,
+        gesturesEnabled = drawerState.isOpen,
+        drawerState = drawerState,
+        drawerContent = {
+            Button(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                onClick = { scope.launch { drawerState.close() } },
+                content = { Text("Close Drawer") }
+            )
+            LazyColumn {
+                items(25) {
+                    ListItem(
+                        text = { Text("Item $it") },
+                        icon = {
+                            Icon(
+                                Icons.Default.AccountBox,
+                                contentDescription = "Localized description"
+                            )
+                        }
+                    )
+                }
+            }
+        },
+        content = {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                IconButton(
+                    onClick = {
+                        scope.launch { drawerState.open() }
+                    }) {
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        tint = Color.White,
+                        contentDescription = null
+                    )
+                }
+            }
+
+        }
+    )
 }
