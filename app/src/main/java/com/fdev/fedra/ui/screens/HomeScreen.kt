@@ -28,13 +28,15 @@ import kotlinx.coroutines.launch
 @Composable
 @Preview
 fun HomeScreen() {
-    val dummyPhotos = arrayListOf(R.drawable.foto_0, R.drawable.foto_1, R.drawable.foto_2)
+    val dummyPhotos = arrayListOf(R.drawable.foto_0, R.drawable.foto_1, R.drawable.foto_2,R.drawable.foto_0, R.drawable.foto_1, R.drawable.foto_2,R.drawable.foto_0, R.drawable.foto_1, R.drawable.foto_2)
     val pagerState = rememberPagerState()
     val drawerState = rememberBottomDrawerState(BottomDrawerValue.Closed)
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         VerticalPager(
+            userScrollEnabled = drawerState.isClosed,
             pageCount = dummyPhotos.size,
             state = pagerState,
             key = { dummyPhotos[it] }
@@ -47,80 +49,86 @@ fun HomeScreen() {
                     modifier = Modifier
                         .fillMaxSize()
                 )
-
-                GradientBackground()
-                    Column(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .zIndex(3f)
-                            .fillMaxWidth(0.8f),
-                        verticalArrangement = Arrangement.Bottom,
-                        horizontalAlignment = Alignment.Start
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(PaddingValues(15.dp, 5.dp, 0.dp, 0.dp)),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Image(
-                                painter = painterResource(id = dummyPhotos[index]),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .fillMaxWidth(0.158f)
-                                    .fillMaxHeight(0.06f)
-                                    .clip(CircleShape)
-                                    .border(2.dp, Color.Green, CircleShape)
-                            )
-
-                            Spacer(modifier = Modifier.fillMaxWidth(0.05f))
-
-                            Text(
-                                text = "$index Username",
-                                color = Color.White,
-                                fontSize = 18.sp
-                            )
-
-                        }
-                        Text(
-                            text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
-                            color = Color.White,
-                            modifier = Modifier.padding(PaddingValues(20.dp, 10.dp, 0.dp, 0.dp)),
-                            fontSize = 14.sp
-                        )
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(PaddingValues(15.dp, 5.dp, 5.dp, 0.dp)),
-                            verticalAlignment = Alignment.Bottom
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.LocationOn,
-                                tint = Color.White,
-                                contentDescription = null
-                            )
-
-                            Text(
-                                text = "Kurila, Prizren",
-                                color = Color.White,
-                                fontSize = 16.sp
-                            )
-
-                        }
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(.1f)
-                        )
-                    }
-
-                    InteractionButtons( drawerState)
-                }
+                PostDetails(drawerState, index, dummyPhotos)
+                InteractionButtons(drawerState)
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun PostDetails(drawerState: BottomDrawerState, index: Int, dummyPhotos: ArrayList<Int>) {
+    if (drawerState.isClosed) {
+        GradientBackground()
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .zIndex(3f)
+                .fillMaxWidth(0.8f),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(PaddingValues(15.dp, 5.dp, 0.dp, 0.dp)),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = dummyPhotos[index]),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth(0.158f)
+                        .fillMaxHeight(0.06f)
+                        .clip(CircleShape)
+                        .border(2.dp, Color.Green, CircleShape)
+                )
+
+                Spacer(modifier = Modifier.fillMaxWidth(0.05f))
+
+                Text(
+                    text = "$index Username",
+                    color = Color.White,
+                    fontSize = 18.sp
+                )
+
+            }
+            Text(
+                text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+                color = Color.White,
+                modifier = Modifier.padding(PaddingValues(20.dp, 10.dp, 0.dp, 0.dp)),
+                fontSize = 14.sp
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(PaddingValues(15.dp, 5.dp, 5.dp, 0.dp)),
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.LocationOn,
+                    tint = Color.White,
+                    contentDescription = null
+                )
+
+                Text(
+                    text = "Kurila, Prizren",
+                    color = Color.White,
+                    fontSize = 16.sp
+                )
+
+            }
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(.1f)
+            )
+        }
+    }
+}
 
 
 @Composable
@@ -144,7 +152,7 @@ fun GradientBackground() {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun InteractionButtons( drawerState: BottomDrawerState) {
+fun InteractionButtons(drawerState: BottomDrawerState) {
     var isLiked by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     BottomDrawer(
