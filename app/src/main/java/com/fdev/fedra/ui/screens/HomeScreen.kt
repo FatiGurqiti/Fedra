@@ -21,7 +21,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.fdev.fedra.R
 import kotlinx.coroutines.launch
 
@@ -50,21 +49,11 @@ fun HomeScreen() {
                 )
 
                 GradientBackground()
-
-                ConstraintLayout(
-                    modifier = Modifier
-                        .zIndex(3f)
-                        .fillMaxSize()
-                ) {
-                    val (column, commentIcon) = createRefs()
                     Column(
                         modifier = Modifier
                             .fillMaxHeight()
-                            .fillMaxWidth(0.8f)
-                            .constrainAs(column) {
-                                start.linkTo(parent.start)
-                                bottom.linkTo(parent.bottom)
-                            },
+                            .zIndex(3f)
+                            .fillMaxWidth(0.8f),
                         verticalArrangement = Arrangement.Bottom,
                         horizontalAlignment = Alignment.Start
                     ) {
@@ -120,7 +109,6 @@ fun HomeScreen() {
                             )
 
                         }
-
                         Spacer(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -128,18 +116,12 @@ fun HomeScreen() {
                         )
                     }
 
-                    InteractionButtons(
-                        modifier = Modifier
-                            .constrainAs(commentIcon) {
-                                end.linkTo(parent.end)
-                                bottom.linkTo(parent.bottom, margin = 50.dp)
-                            }, drawerState
-                    )
+                    InteractionButtons( drawerState)
                 }
             }
         }
     }
-}
+
 
 @Composable
 fun GradientBackground() {
@@ -162,11 +144,10 @@ fun GradientBackground() {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun InteractionButtons(modifier: Modifier, drawerState: BottomDrawerState) {
+fun InteractionButtons( drawerState: BottomDrawerState) {
     var isLiked by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     BottomDrawer(
-        modifier = modifier,
         gesturesEnabled = drawerState.isOpen,
         drawerState = drawerState,
         drawerContent = {
@@ -212,8 +193,6 @@ fun InteractionButtons(modifier: Modifier, drawerState: BottomDrawerState) {
                     )
                 }
 
-                Text(text = "55", color = Color.White)
-
                 IconButton(
                     onClick = {
                         scope.launch { drawerState.open() }
@@ -225,8 +204,6 @@ fun InteractionButtons(modifier: Modifier, drawerState: BottomDrawerState) {
                         contentDescription = null
                     )
                 }
-
-                Text(text = "55", color = Color.White)
 
                 IconButton(
                     onClick = {
@@ -240,8 +217,11 @@ fun InteractionButtons(modifier: Modifier, drawerState: BottomDrawerState) {
                     )
                 }
 
-                Text(text = "55", color = Color.White)
-
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(.1f)
+                )
             }
         }
     )
