@@ -128,7 +128,7 @@ fun HomeScreen() {
                         )
                     }
 
-                    CommentBottomSheet(
+                    InteractionButtons(
                         modifier = Modifier
                             .constrainAs(commentIcon) {
                                 end.linkTo(parent.end)
@@ -162,7 +162,7 @@ fun GradientBackground() {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun CommentBottomSheet(modifier: Modifier, drawerState: BottomDrawerState) {
+fun InteractionButtons(modifier: Modifier, drawerState: BottomDrawerState) {
     var isLiked by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     BottomDrawer(
@@ -191,7 +191,9 @@ fun CommentBottomSheet(modifier: Modifier, drawerState: BottomDrawerState) {
         },
         content = {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(PaddingValues(7.dp, 0.dp)),
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.Bottom
             ) {
@@ -202,6 +204,7 @@ fun CommentBottomSheet(modifier: Modifier, drawerState: BottomDrawerState) {
                 )
                 {
                     Icon(
+                        modifier = Modifier.fillMaxSize(0.1f),
                         imageVector = if (isLiked) Icons.Filled.Favorite
                         else Icons.Filled.FavoriteBorder,
                         tint = if (isLiked) Color.Red else Color.White,
@@ -209,27 +212,36 @@ fun CommentBottomSheet(modifier: Modifier, drawerState: BottomDrawerState) {
                     )
                 }
 
+                Text(text = "55", color = Color.White)
+
                 IconButton(
                     onClick = {
                         scope.launch { drawerState.open() }
                     }) {
                     Icon(
+                        modifier = Modifier.fillMaxSize(0.1f),
                         imageVector = Icons.Filled.Star,
                         tint = Color.White,
                         contentDescription = null
                     )
                 }
 
+                Text(text = "55", color = Color.White)
+
                 IconButton(
                     onClick = {
 
                     }) {
                     Icon(
+                        modifier = Modifier.fillMaxSize(0.1f),
                         imageVector = Icons.Filled.Person,
                         tint = Color.White,
                         contentDescription = null
                     )
                 }
+
+                Text(text = "55", color = Color.White)
+
             }
         }
     )
