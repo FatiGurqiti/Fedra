@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.twotone.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +29,17 @@ import kotlinx.coroutines.launch
 @Composable
 @Preview
 fun HomeScreen() {
-    val dummyPhotos = arrayListOf(R.drawable.foto_0, R.drawable.foto_1, R.drawable.foto_2,R.drawable.foto_0, R.drawable.foto_1, R.drawable.foto_2,R.drawable.foto_0, R.drawable.foto_1, R.drawable.foto_2)
+    val dummyPhotos = arrayListOf(
+        R.drawable.foto_0,
+        R.drawable.foto_1,
+        R.drawable.foto_2,
+        R.drawable.foto_0,
+        R.drawable.foto_1,
+        R.drawable.foto_2,
+        R.drawable.foto_0,
+        R.drawable.foto_1,
+        R.drawable.foto_2
+    )
     val pagerState = rememberPagerState()
     val drawerState = rememberBottomDrawerState(BottomDrawerValue.Closed)
 
@@ -46,8 +57,7 @@ fun HomeScreen() {
                     painter = painterResource(id = dummyPhotos[index]),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
+                    modifier = Modifier.fillMaxSize()
                 )
                 PostDetails(drawerState, index, dummyPhotos)
                 InteractionButtons(drawerState)
@@ -159,24 +169,30 @@ fun InteractionButtons(drawerState: BottomDrawerState) {
         gesturesEnabled = drawerState.isOpen,
         drawerState = drawerState,
         drawerContent = {
-            Button(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                onClick = { scope.launch { drawerState.close() } },
-                content = { Text("Close Drawer") }
-            )
-            LazyColumn {
-                items(25) {
-                    ListItem(
-                        text = { Text("Item $it") },
-                        icon = {
-                            Icon(
-                                Icons.Default.AccountBox,
-                                contentDescription = "Localized description"
-                            )
-                        }
+                IconButton(
+                    modifier = Modifier.align(Alignment.End),
+                    onClick = { scope.launch { drawerState.close() } }
+                )
+                {
+                    Icon(
+                        imageVector = Icons.TwoTone.Close,
+                        tint = Color.Black,
+                        contentDescription = null,
                     )
                 }
-            }
+                LazyColumn() {
+                    items(25) {
+                        ListItem(
+                            text = { Text("Item $it") },
+                            icon = {
+                                Icon(
+                                    Icons.Default.AccountBox,
+                                    contentDescription = "Localized description"
+                                )
+                            }
+                        )
+                    }
+                }
         },
         content = {
             Column(
