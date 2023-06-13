@@ -59,7 +59,7 @@ fun HomeScreen() {
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
-                PostDetails(drawerState, index, dummyPhotos)
+                PostDetails(index, dummyPhotos)
                 InteractionButtons(drawerState)
             }
         }
@@ -68,75 +68,74 @@ fun HomeScreen() {
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PostDetails(drawerState: BottomDrawerState, index: Int, dummyPhotos: ArrayList<Int>) {
-    if (drawerState.isClosed) {
-        GradientBackground()
-        Column(
+fun PostDetails(index: Int, dummyPhotos: ArrayList<Int>) {
+    GradientBackground()
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .zIndex(3f)
+            .fillMaxWidth(0.8f),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.Start
+    ) {
+        Row(
             modifier = Modifier
-                .fillMaxHeight()
-                .zIndex(3f)
-                .fillMaxWidth(0.8f),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.Start
+                .fillMaxWidth()
+                .padding(PaddingValues(15.dp, 5.dp, 0.dp, 0.dp)),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
+            Image(
+                painter = painterResource(id = dummyPhotos[index]),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(PaddingValues(15.dp, 5.dp, 0.dp, 0.dp)),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = dummyPhotos[index]),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth(0.158f)
-                        .fillMaxHeight(0.06f)
-                        .clip(CircleShape)
-                        .border(2.dp, Color.Green, CircleShape)
-                )
+                    .fillMaxWidth(0.158f)
+                    .fillMaxHeight(0.06f)
+                    .zIndex(3f)
+                    .clip(CircleShape)
+                    .border(2.dp, Color.Green, CircleShape)
+            )
 
-                Spacer(modifier = Modifier.fillMaxWidth(0.05f))
+            Spacer(modifier = Modifier.fillMaxWidth(0.05f))
 
-                Text(
-                    text = "$index Username",
-                    color = Color.White,
-                    fontSize = 18.sp
-                )
-
-            }
             Text(
-                text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+                text = "$index Username",
                 color = Color.White,
-                modifier = Modifier.padding(PaddingValues(20.dp, 10.dp, 0.dp, 0.dp)),
-                fontSize = 14.sp
+                fontSize = 18.sp
             )
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(PaddingValues(15.dp, 5.dp, 5.dp, 0.dp)),
-                verticalAlignment = Alignment.Bottom
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.LocationOn,
-                    tint = Color.White,
-                    contentDescription = null
-                )
-
-                Text(
-                    text = "Kurila, Prizren",
-                    color = Color.White,
-                    fontSize = 16.sp
-                )
-
-            }
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(.1f)
-            )
         }
+        Text(
+            text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+            color = Color.White,
+            modifier = Modifier.padding(PaddingValues(20.dp, 10.dp, 0.dp, 0.dp)),
+            fontSize = 14.sp
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(PaddingValues(15.dp, 5.dp, 5.dp, 0.dp)),
+            verticalAlignment = Alignment.Bottom
+        ) {
+            Icon(
+                imageVector = Icons.Filled.LocationOn,
+                tint = Color.White,
+                contentDescription = null
+            )
+
+            Text(
+                text = "Kurila, Prizren",
+                color = Color.White,
+                fontSize = 16.sp
+            )
+
+        }
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(.1f)
+        )
     }
 }
 
@@ -166,33 +165,34 @@ fun InteractionButtons(drawerState: BottomDrawerState) {
     var isLiked by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     BottomDrawer(
+        modifier = Modifier.zIndex(3f),
         gesturesEnabled = drawerState.isOpen,
         drawerState = drawerState,
         drawerContent = {
-                IconButton(
-                    modifier = Modifier.align(Alignment.End),
-                    onClick = { scope.launch { drawerState.close() } }
+            IconButton(
+                modifier = Modifier.align(Alignment.End),
+                onClick = { scope.launch { drawerState.close() } }
+            )
+            {
+                Icon(
+                    imageVector = Icons.TwoTone.Close,
+                    tint = Color.Black,
+                    contentDescription = null,
                 )
-                {
-                    Icon(
-                        imageVector = Icons.TwoTone.Close,
-                        tint = Color.Black,
-                        contentDescription = null,
+            }
+            LazyColumn() {
+                items(25) {
+                    ListItem(
+                        text = { Text("Item $it") },
+                        icon = {
+                            Icon(
+                                Icons.Default.AccountBox,
+                                contentDescription = "Localized description"
+                            )
+                        }
                     )
                 }
-                LazyColumn() {
-                    items(25) {
-                        ListItem(
-                            text = { Text("Item $it") },
-                            icon = {
-                                Icon(
-                                    Icons.Default.AccountBox,
-                                    contentDescription = "Localized description"
-                                )
-                            }
-                        )
-                    }
-                }
+            }
         },
         content = {
             Column(
