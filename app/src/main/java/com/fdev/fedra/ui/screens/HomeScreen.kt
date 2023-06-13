@@ -202,43 +202,59 @@ fun InteractionButtons(drawerState: BottomDrawerState) {
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.Bottom
             ) {
+
                 IconButton(
                     onClick = {
                         isLiked = !isLiked
                     },
                 )
                 {
-                    Icon(
-                        modifier = Modifier.fillMaxSize(0.1f),
-                        imageVector = if (isLiked) Icons.Filled.Favorite
-                        else Icons.Filled.FavoriteBorder,
-                        tint = if (isLiked) Color.Red else Color.White,
-                        contentDescription = null,
-                    )
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Icon(
+                            imageVector = if (isLiked) Icons.Filled.Favorite
+                            else Icons.Filled.FavoriteBorder,
+                            tint = if (isLiked) Color.Red else Color.White,
+                            contentDescription = null,
+                        )
+                        Text(text = "555")
+                    }
                 }
 
                 IconButton(
                     onClick = {
                         scope.launch { drawerState.open() }
                     }) {
-                    Icon(
-                        modifier = Modifier.fillMaxSize(0.1f),
-                        imageVector = Icons.Filled.Star,
-                        tint = Color.White,
-                        contentDescription = null
-                    )
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            tint = Color.White,
+                            contentDescription = null
+                        )
+                        Text(text = "444")
+                    }
                 }
 
                 IconButton(
                     onClick = {
 
                     }) {
-                    Icon(
-                        modifier = Modifier.fillMaxSize(0.1f),
-                        imageVector = Icons.Filled.Person,
-                        tint = Color.White,
-                        contentDescription = null
-                    )
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Person,
+                            tint = Color.White,
+                            contentDescription = null
+                        )
+                        Text(text = "333")
+                    }
                 }
 
                 Spacer(
