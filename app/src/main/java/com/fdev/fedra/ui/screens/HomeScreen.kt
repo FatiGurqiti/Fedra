@@ -1,11 +1,13 @@
 package com.fdev.fedra.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -17,8 +19,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -32,6 +36,8 @@ fun HomeScreen() {
     val sheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val textFieldCharacterLimit = 256
 
     val dummyPhotos = arrayListOf(
         R.drawable.foto_0, R.drawable.foto_1, R.drawable.foto_2
@@ -39,6 +45,7 @@ fun HomeScreen() {
     val pagerState = rememberPagerState()
 
     BottomSheetScaffold(
+        modifier = Modifier.fillMaxSize(),
         sheetPeekHeight = 0.dp,
         sheetBackgroundColor = MaterialTheme.colors.background,
         sheetGesturesEnabled = true,
@@ -46,27 +53,40 @@ fun HomeScreen() {
         drawerGesturesEnabled = true,
         sheetContent = {
 
-            Text(text = "${pagerState.currentPage} Comment", Modifier.align(Alignment.CenterHorizontally))
+            Row(modifier = Modifier.fillMaxWidth()) {
 
-            IconButton(modifier = Modifier.align(Alignment.End),
-                onClick = { scope.launch { sheetState.collapse() } }) {
-                Icon(
-                    imageVector = Icons.TwoTone.Close,
-                    tint = MaterialTheme.colors.secondary,
-                    contentDescription = null,
+                Spacer(modifier = Modifier.fillMaxWidth(0.2f))
+
+                Text(
+                    text = "${pagerState.currentPage} Comment",
+                    Modifier
+                        .weight(0.8f)
+                        .padding(10.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp
                 )
+
+                IconButton(modifier = Modifier.weight(0.2f),
+                    onClick = { scope.launch { sheetState.collapse() } }) {
+                    Icon(
+                        imageVector = Icons.TwoTone.Close,
+                        tint = MaterialTheme.colors.secondary,
+                        contentDescription = null,
+                    )
+                }
+
             }
 
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
+                    .fillMaxHeight(.8f)
                     .padding(5.dp)
             ) {
                 items(25) {
                     ListItem(text = { Text("Item $it") }, icon = {
                         Icon(
-                            Icons.Default.AccountBox,
-                            contentDescription = "Localized description"
+                            Icons.Default.AccountBox, contentDescription = "Localized description"
                         )
                     })
                 }
@@ -78,15 +98,30 @@ fun HomeScreen() {
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                var text by remember { mutableStateOf(TextFieldValue("")) }
-                OutlinedTextField(modifier = Modifier.fillMaxWidth(0.9f),
-                    value = text,
-                    onValueChange = { newText ->
-                        text = newText
+                var commentText by remember { mutableStateOf(TextFieldValue("")) }
+                OutlinedTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .border(
+                            color = Color.White, width = 1.dp, shape = RoundedCornerShape(12.dp)
+                        ),
+                    shape = RoundedCornerShape(12.dp),
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            Toast.makeText(context,"${commentText.text}", Toast.LENGTH_SHORT).show()
+                        }) {
+                            Icon(Icons.Filled.Send, "", tint = MaterialTheme.colors.secondary)
+                        }
                     },
-                    placeholder = { Text(text = "Enter your comment") })
+                    value = commentText,
+                    onValueChange = { newText ->
+                        if (newText.text.length <= textFieldCharacterLimit) commentText = newText
+                    },
+                    placeholder = { Text(text = "Enter your comment") },
+
+                    )
             }
-            Spacer(modifier = Modifier.fillMaxHeight(0.2f))
+            Spacer(modifier = Modifier.fillMaxHeight(2f))
         },
     ) {
         VerticalPager(userScrollEnabled = sheetState.isCollapsed,
