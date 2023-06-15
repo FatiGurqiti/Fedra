@@ -18,41 +18,101 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.fdev.fedra.R
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 @Preview
 fun HomeScreen() {
-    val dummyPhotos = arrayListOf(
-        R.drawable.foto_0,
-        R.drawable.foto_1,
-        R.drawable.foto_2,
-        R.drawable.foto_0,
-        R.drawable.foto_1,
-        R.drawable.foto_2,
-        R.drawable.foto_0,
-        R.drawable.foto_1,
-        R.drawable.foto_2
+    val sheetState = rememberBottomSheetState(
+        initialValue = BottomSheetValue.Collapsed
     )
-    val pagerState = rememberPagerState()
-    val drawerState = rememberBottomDrawerState(BottomDrawerValue.Closed)
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = sheetState
+    )
+    val scope = rememberCoroutineScope()
 
-    Box(
-        modifier = Modifier.fillMaxSize()
+    BottomSheetScaffold(
+        scaffoldState = scaffoldState,
+        sheetContent = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                IconButton(
+                    modifier = Modifier.align(Alignment.End),
+                    onClick = { scope.launch { sheetState.collapse() } }
+                )
+                {
+                    Icon(
+                        imageVector = Icons.TwoTone.Close,
+                        tint = Color.Black,
+                        contentDescription = null,
+                    )
+                }
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.7f),
+                ) {
+                    items(25) {
+                        ListItem(
+                            text = { Text("Item $it") },
+                            icon = {
+                                Icon(
+                                    Icons.Default.AccountBox,
+                                    contentDescription = "Localized description"
+                                )
+                            }
+                        )
+                    }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    var text by remember { mutableStateOf(TextFieldValue("")) }
+                    OutlinedTextField(
+                        value = text,
+                        onValueChange = { newText ->
+                            text = newText
+                        },
+                        placeholder = { Text(text = "Enter your comment") }
+                    )
+                }
+
+
+                Spacer(modifier = Modifier.fillMaxHeight(0.4f))
+            }
+        },
+        sheetBackgroundColor = Color.White,
+        sheetPeekHeight = 0.dp
     ) {
+        val dummyPhotos = arrayListOf(
+            R.drawable.foto_0,
+            R.drawable.foto_1,
+            R.drawable.foto_2
+        )
+        val pagerState = rememberPagerState()
+        val drawerState = rememberBottomDrawerState(BottomDrawerValue.Closed)
         VerticalPager(
             userScrollEnabled = drawerState.isClosed,
-            pageCount = dummyPhotos.size,
+            pageCount = 3,
             state = pagerState,
             key = { dummyPhotos[it] }
         ) { index ->
             Box(modifier = Modifier.fillMaxSize()) {
+
                 Image(
                     painter = painterResource(id = dummyPhotos[index]),
                     contentDescription = null,
@@ -60,13 +120,12 @@ fun HomeScreen() {
                     modifier = Modifier.fillMaxSize()
                 )
                 PostDetails(index, dummyPhotos)
-                InteractionButtons(drawerState)
+                InteractionButtons(scope, sheetState)
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PostDetails(index: Int, dummyPhotos: ArrayList<Int>) {
     GradientBackground()
@@ -159,110 +218,77 @@ fun GradientBackground() {
     }
 }
 
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun InteractionButtons(drawerState: BottomDrawerState) {
+fun InteractionButtons(scope: CoroutineScope, sheetState: BottomSheetState) {
     var isLiked by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    BottomDrawer(
-        modifier = Modifier.zIndex(3f),
-        gesturesEnabled = drawerState.isOpen,
-        drawerState = drawerState,
-        drawerContent = {
-            IconButton(
-                modifier = Modifier.align(Alignment.End),
-                onClick = { scope.launch { drawerState.close() } }
-            )
-            {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(PaddingValues(7.dp, 0.dp)),
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.Bottom
+    ) {
+
+        IconButton(
+            onClick = {
+                isLiked = !isLiked
+            },
+        )
+        {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 Icon(
-                    imageVector = Icons.TwoTone.Close,
-                    tint = Color.Black,
+                    imageVector = if (isLiked) Icons.Filled.Favorite
+                    else Icons.Filled.FavoriteBorder,
+                    tint = if (isLiked) Color.Red else Color.White,
                     contentDescription = null,
                 )
-            }
-            LazyColumn() {
-                items(25) {
-                    ListItem(
-                        text = { Text("Item $it") },
-                        icon = {
-                            Icon(
-                                Icons.Default.AccountBox,
-                                contentDescription = "Localized description"
-                            )
-                        }
-                    )
-                }
-            }
-        },
-        content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(PaddingValues(7.dp, 0.dp)),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.Bottom
-            ) {
-
-                IconButton(
-                    onClick = {
-                        isLiked = !isLiked
-                    },
-                )
-                {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Icon(
-                            imageVector = if (isLiked) Icons.Filled.Favorite
-                            else Icons.Filled.FavoriteBorder,
-                            tint = if (isLiked) Color.Red else Color.White,
-                            contentDescription = null,
-                        )
-                        Text(text = "555")
-                    }
-                }
-
-                IconButton(
-                    onClick = {
-                        scope.launch { drawerState.open() }
-                    }) {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Star,
-                            tint = Color.White,
-                            contentDescription = null
-                        )
-                        Text(text = "444")
-                    }
-                }
-
-                IconButton(
-                    onClick = {
-
-                    }) {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Person,
-                            tint = Color.White,
-                            contentDescription = null
-                        )
-                        Text(text = "333")
-                    }
-                }
-
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(.1f)
-                )
+                Text(text = "555")
             }
         }
-    )
+
+        IconButton(
+            onClick = {
+                scope.launch { sheetState.expand() }
+            }) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    tint = Color.White,
+                    contentDescription = null
+                )
+                Text(text = "444")
+            }
+        }
+
+        IconButton(
+            onClick = {
+
+            }) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Person,
+                    tint = Color.White,
+                    contentDescription = null
+                )
+                Text(text = "333")
+            }
+        }
+
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(.1f)
+        )
+    }
 }
