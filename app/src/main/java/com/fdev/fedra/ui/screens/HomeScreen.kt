@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -29,88 +28,71 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
-@Preview
 fun HomeScreen() {
-    val sheetState = rememberBottomSheetState(
-        initialValue = BottomSheetValue.Collapsed
-    )
-    val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = sheetState
-    )
+    val sheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
+    val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
     val scope = rememberCoroutineScope()
 
+    val dummyPhotos = arrayListOf(
+        R.drawable.foto_0, R.drawable.foto_1, R.drawable.foto_2
+    )
+    val pagerState = rememberPagerState()
+
     BottomSheetScaffold(
+        sheetPeekHeight = 0.dp,
+        sheetBackgroundColor = MaterialTheme.colors.background,
+        sheetGesturesEnabled = true,
         scaffoldState = scaffoldState,
+        drawerGesturesEnabled = true,
         sheetContent = {
+
+            Text(text = "${pagerState.currentPage} Comment", Modifier.align(Alignment.CenterHorizontally))
+
+            IconButton(modifier = Modifier.align(Alignment.End),
+                onClick = { scope.launch { sheetState.collapse() } }) {
+                Icon(
+                    imageVector = Icons.TwoTone.Close,
+                    tint = MaterialTheme.colors.secondary,
+                    contentDescription = null,
+                )
+            }
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(5.dp)
+            ) {
+                items(25) {
+                    ListItem(text = { Text("Item $it") }, icon = {
+                        Icon(
+                            Icons.Default.AccountBox,
+                            contentDescription = "Localized description"
+                        )
+                    })
+                }
+            }
+
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .padding(5.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                IconButton(
-                    modifier = Modifier.align(Alignment.End),
-                    onClick = { scope.launch { sheetState.collapse() } }
-                )
-                {
-                    Icon(
-                        imageVector = Icons.TwoTone.Close,
-                        tint = Color.Black,
-                        contentDescription = null,
-                    )
-                }
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.7f),
-                ) {
-                    items(25) {
-                        ListItem(
-                            text = { Text("Item $it") },
-                            icon = {
-                                Icon(
-                                    Icons.Default.AccountBox,
-                                    contentDescription = "Localized description"
-                                )
-                            }
-                        )
-                    }
-                }
-
-                Column(
-                    modifier = Modifier
-                        .padding(5.dp)
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    var text by remember { mutableStateOf(TextFieldValue("")) }
-                    OutlinedTextField(
-                        value = text,
-                        onValueChange = { newText ->
-                            text = newText
-                        },
-                        placeholder = { Text(text = "Enter your comment") }
-                    )
-                }
-
-
-                Spacer(modifier = Modifier.fillMaxHeight(0.4f))
+                var text by remember { mutableStateOf(TextFieldValue("")) }
+                OutlinedTextField(modifier = Modifier.fillMaxWidth(0.9f),
+                    value = text,
+                    onValueChange = { newText ->
+                        text = newText
+                    },
+                    placeholder = { Text(text = "Enter your comment") })
             }
+            Spacer(modifier = Modifier.fillMaxHeight(0.2f))
         },
-        sheetBackgroundColor = Color.White,
-        sheetPeekHeight = 0.dp
     ) {
-        val dummyPhotos = arrayListOf(
-            R.drawable.foto_0,
-            R.drawable.foto_1,
-            R.drawable.foto_2
-        )
-        val pagerState = rememberPagerState()
-        val drawerState = rememberBottomDrawerState(BottomDrawerValue.Closed)
-        VerticalPager(
-            userScrollEnabled = drawerState.isClosed,
-            pageCount = 3,
+        VerticalPager(userScrollEnabled = sheetState.isCollapsed,
+            pageCount = dummyPhotos.size,
             state = pagerState,
-            key = { dummyPhotos[it] }
-        ) { index ->
+            key = { dummyPhotos[it] }) { index ->
             Box(modifier = Modifier.fillMaxSize()) {
 
                 Image(
@@ -158,9 +140,7 @@ fun PostDetails(index: Int, dummyPhotos: ArrayList<Int>) {
             Spacer(modifier = Modifier.fillMaxWidth(0.05f))
 
             Text(
-                text = "$index Username",
-                color = Color.White,
-                fontSize = 18.sp
+                text = "$index Username", color = Color.White, fontSize = 18.sp
             )
 
         }
@@ -178,15 +158,11 @@ fun PostDetails(index: Int, dummyPhotos: ArrayList<Int>) {
             verticalAlignment = Alignment.Bottom
         ) {
             Icon(
-                imageVector = Icons.Filled.LocationOn,
-                tint = Color.White,
-                contentDescription = null
+                imageVector = Icons.Filled.LocationOn, tint = Color.White, contentDescription = null
             )
 
             Text(
-                text = "Kurila, Prizren",
-                color = Color.White,
-                fontSize = 16.sp
+                text = "Kurila, Prizren", color = Color.White, fontSize = 16.sp
             )
 
         }
@@ -202,8 +178,7 @@ fun PostDetails(index: Int, dummyPhotos: ArrayList<Int>) {
 @Composable
 fun GradientBackground() {
     Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Bottom
+        modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Bottom
     ) {
         val gradientBrush = Brush.verticalGradient(
             colors = listOf(Color(0x00000000), Color(0x99000000))
@@ -235,8 +210,7 @@ fun InteractionButtons(scope: CoroutineScope, sheetState: BottomSheetState) {
             onClick = {
                 isLiked = !isLiked
             },
-        )
-        {
+        ) {
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -251,35 +225,29 @@ fun InteractionButtons(scope: CoroutineScope, sheetState: BottomSheetState) {
             }
         }
 
-        IconButton(
-            onClick = {
-                scope.launch { sheetState.expand() }
-            }) {
+        IconButton(onClick = {
+            scope.launch { sheetState.expand() }
+        }) {
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Star,
-                    tint = Color.White,
-                    contentDescription = null
+                    imageVector = Icons.Filled.Star, tint = Color.White, contentDescription = null
                 )
                 Text(text = "444")
             }
         }
 
-        IconButton(
-            onClick = {
+        IconButton(onClick = {
 
-            }) {
+        }) {
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Person,
-                    tint = Color.White,
-                    contentDescription = null
+                    imageVector = Icons.Filled.Person, tint = Color.White, contentDescription = null
                 )
                 Text(text = "333")
             }
