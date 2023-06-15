@@ -3,12 +3,15 @@ package com.fdev.fedra
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.rememberNavController
 import com.fdev.fedra.domain.models.BottomNavItem
 import com.fdev.fedra.ui.Navigation
@@ -53,9 +56,10 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxWidth(),
                 onClickEvent = {
                     navController.navigate(it.route)
-                }
+                },
             )
-        }, content = {
+        },
+        content = {
             it.calculateBottomPadding()
             Navigation(navController = navController)
         })

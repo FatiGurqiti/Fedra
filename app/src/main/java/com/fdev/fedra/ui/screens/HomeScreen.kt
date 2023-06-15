@@ -83,7 +83,7 @@ fun HomeScreen() {
                     .fillMaxHeight(.8f)
                     .padding(5.dp)
             ) {
-                items(25) {
+                items(3) {
                     ListItem(text = { Text("Item $it") }, icon = {
                         Icon(
                             Icons.Default.AccountBox, contentDescription = "Localized description"
@@ -95,22 +95,27 @@ fun HomeScreen() {
             Column(
                 modifier = Modifier
                     .padding(5.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.7f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
                 var commentText by remember { mutableStateOf(TextFieldValue("")) }
                 OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .border(
-                            color = Color.White, width = 1.dp, shape = RoundedCornerShape(12.dp)
-                        ),
+                    modifier = Modifier.fillMaxWidth(0.9f),
                     shape = RoundedCornerShape(12.dp),
+                    colors = TextFieldDefaults.textFieldColors(
+                        textColor = MaterialTheme.colors.secondary,
+                        backgroundColor = Color.Transparent,
+                        focusedIndicatorColor = MaterialTheme.colors.primary,
+                        unfocusedIndicatorColor = MaterialTheme.colors.primary
+                    ),
                     trailingIcon = {
                         IconButton(onClick = {
-                            Toast.makeText(context,"${commentText.text}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "${commentText.text}", Toast.LENGTH_SHORT)
+                                .show()
                         }) {
-                            Icon(Icons.Filled.Send, "", tint = MaterialTheme.colors.secondary)
+                            Icon(Icons.Filled.Send, "", tint = MaterialTheme.colors.primary)
                         }
                     },
                     value = commentText,
@@ -121,7 +126,7 @@ fun HomeScreen() {
 
                     )
             }
-            Spacer(modifier = Modifier.fillMaxHeight(2f))
+            Spacer(modifier = Modifier.fillMaxHeight(0.8f))
         },
     ) {
         VerticalPager(userScrollEnabled = sheetState.isCollapsed,
@@ -256,7 +261,7 @@ fun InteractionButtons(scope: CoroutineScope, sheetState: BottomSheetState) {
                     tint = if (isLiked) Color.Red else Color.White,
                     contentDescription = null,
                 )
-                Text(text = "555")
+                Text(text = "555", color = Color.White)
             }
         }
 
@@ -270,7 +275,7 @@ fun InteractionButtons(scope: CoroutineScope, sheetState: BottomSheetState) {
                 Icon(
                     imageVector = Icons.Filled.Star, tint = Color.White, contentDescription = null
                 )
-                Text(text = "444")
+                Text(text = "444", color = Color.White)
             }
         }
 
@@ -284,7 +289,7 @@ fun InteractionButtons(scope: CoroutineScope, sheetState: BottomSheetState) {
                 Icon(
                     imageVector = Icons.Filled.Person, tint = Color.White, contentDescription = null
                 )
-                Text(text = "333")
+                Text(text = "333", color = Color.White)
             }
         }
 

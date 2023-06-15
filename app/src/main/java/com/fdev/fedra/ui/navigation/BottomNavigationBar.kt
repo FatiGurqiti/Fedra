@@ -1,5 +1,6 @@
 package com.fdev.fedra.ui.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -30,8 +31,9 @@ fun BottomNavigationBar(
         items.forEach {
             val selected = it.route == backStackEntry.value?.destination?.route
             BottomNavigationItem(
+                modifier = Modifier.background(MaterialTheme.colors.background),
                 selected = selected,
-                selectedContentColor = Color.Green,
+                selectedContentColor = MaterialTheme.colors.surface,
                 unselectedContentColor = Color.Gray,
                 onClick = { onClickEvent(it) },
                 icon = {
