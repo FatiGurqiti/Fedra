@@ -58,8 +58,9 @@ fun HomeScreen() {
                 Spacer(modifier = Modifier.fillMaxWidth(0.2f))
 
                 Text(
+                    color = MaterialTheme.colors.secondary,
                     text = "${pagerState.currentPage} Comment",
-                    Modifier
+                    modifier = Modifier
                         .weight(0.8f)
                         .padding(10.dp),
                     textAlign = TextAlign.Center,
@@ -84,11 +85,15 @@ fun HomeScreen() {
                     .padding(5.dp)
             ) {
                 items(3) {
-                    ListItem(text = { Text("Item $it") }, icon = {
-                        Icon(
-                            Icons.Default.AccountBox, contentDescription = "Localized description"
-                        )
-                    })
+                    ListItem(
+                        text = { Text(text = "Item $it", color = MaterialTheme.colors.secondary) },
+                        icon = {
+                            Icon(
+                                Icons.Default.AccountBox,
+                                contentDescription = "Localized description",
+                                tint = MaterialTheme.colors.secondary
+                            )
+                        })
                 }
             }
 
@@ -107,15 +112,15 @@ fun HomeScreen() {
                     colors = TextFieldDefaults.textFieldColors(
                         textColor = MaterialTheme.colors.secondary,
                         backgroundColor = Color.Transparent,
-                        focusedIndicatorColor = MaterialTheme.colors.primary,
-                        unfocusedIndicatorColor = MaterialTheme.colors.primary
+                        focusedIndicatorColor = MaterialTheme.colors.secondary,
+                        unfocusedIndicatorColor = MaterialTheme.colors.secondary
                     ),
                     trailingIcon = {
                         IconButton(onClick = {
                             Toast.makeText(context, "${commentText.text}", Toast.LENGTH_SHORT)
                                 .show()
                         }) {
-                            Icon(Icons.Filled.Send, "", tint = MaterialTheme.colors.primary)
+                            Icon(Icons.Filled.Send, "", tint = MaterialTheme.colors.secondary)
                         }
                     },
                     value = commentText,
