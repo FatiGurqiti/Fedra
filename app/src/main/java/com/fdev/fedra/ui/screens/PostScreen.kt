@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -30,15 +32,15 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
 
-private var lensFacing = CameraSelector.LENS_FACING_FRONT
 private lateinit var preview: Preview
 private lateinit var previewView: PreviewView
+private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
+private var lensFacing = CameraSelector.LENS_FACING_FRONT
 private var torchState: Boolean? = false
 private var camera: Camera? = null
 
 @Composable
 fun PostScreen() {
-    val context = LocalContext.current
     var selectedImageUri by remember {
         mutableStateOf<Uri?>(null)
     }
@@ -53,7 +55,6 @@ fun PostScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-
 
 //        AsyncImage(
 //            model = selectedImageUri,
@@ -71,7 +72,8 @@ fun PostScreen() {
 fun CameraPreview() {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-    val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
+    cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -81,7 +83,14 @@ fun CameraPreview() {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxSize(),
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onDoubleTap = { tapOffset ->
+                            flipCamera(lifecycleOwner)
+                        }
+                    )
+                },
             shape = RoundedCornerShape(12.dp),
         ) {
             AndroidView(
@@ -142,7 +151,7 @@ fun CameraPreview() {
 
             IconButton(
                 onClick = {
-                    flipCamera(cameraProviderFuture, lifecycleOwner)
+                    flipCamera(lifecycleOwner)
                 }) {
                 Icon(
                     imageVector = Icons.Filled.Refresh,
@@ -193,7 +202,6 @@ fun BottomControls(singleMediaPickerLauncher: ManagedActivityResultLauncher<Pick
 }
 
 private fun flipCamera(
-    cameraProviderFuture: ListenableFuture<ProcessCameraProvider>,
     lifecycleOwner: LifecycleOwner
 ) {
     lensFacing =
