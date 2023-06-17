@@ -22,6 +22,9 @@ fun BottomNavigationBar(
     onClickEvent: (BottomNavItem) -> Unit
 ) {
     val backStackEntry = navController.currentBackStackEntryAsState()
+    val currentScreen = backStackEntry.value?.destination?.route
+
+    if (currentScreen == Screens.PostScreen.route) return // Don't show bottom nav in post screen
 
     BottomNavigation(
         modifier = modifier,
@@ -29,7 +32,7 @@ fun BottomNavigationBar(
         elevation = 5.dp
     ) {
         items.forEach {
-            val selected = it.route == backStackEntry.value?.destination?.route
+            val selected = it.route == currentScreen
             BottomNavigationItem(
                 modifier = Modifier.background(MaterialTheme.colors.background),
                 selected = selected,
