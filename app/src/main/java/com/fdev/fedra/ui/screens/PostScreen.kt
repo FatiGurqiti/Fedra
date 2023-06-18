@@ -1,6 +1,7 @@
 package com.fdev.fedra.ui.screens
 
 import android.net.Uri
+import android.os.Looper
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -9,6 +10,7 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -73,6 +75,9 @@ fun CameraPreview() {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
+    var zoomScale by remember { mutableStateOf(1f) }
+    var zoomScaleText by remember { mutableStateOf("") }
+    var canShowZoomText by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -86,10 +91,22 @@ fun CameraPreview() {
                 .fillMaxSize()
                 .pointerInput(Unit) {
                     detectTapGestures(
-                        onDoubleTap = { tapOffset ->
+                        onDoubleTap = {
+                            canShowZoomText = false
+                            zoomScale = 0f
                             flipCamera(lifecycleOwner)
                         }
                     )
+                }
+                .pointerInput(Unit) {
+                    detectTransformGestures { _, pan, zoom, _ ->
+                        zoomScale *= zoom
+                        camera?.cameraControl?.setZoomRatio(zoomScale)
+                        camera?.cameraInfo?.zoomState?.observe(lifecycleOwner) {
+                            zoomScaleText = String.format("%.1f", it.zoomRatio)
+                            canShowZoomText = true
+                        }
+                    }
                 },
             shape = RoundedCornerShape(12.dp),
         ) {
@@ -143,14 +160,24 @@ fun CameraPreview() {
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
                 contentPadding = ButtonDefaults.ContentPadding,
-                content = { },
-                onClick = { /* Button click action */ }
+                content = {
+                    if (canShowZoomText) {
+                        Text(text = "${zoomScaleText}x", color = Color.Black)
+                        android.os.Handler(Looper.getMainLooper()).postDelayed({
+                            canShowZoomText = false
+                        }, 3500L)
+                    }
+                },
+                onClick = {
+                }
             )
 
             Spacer(modifier = Modifier.fillMaxSize(0.1f))
 
             IconButton(
                 onClick = {
+                    canShowZoomText = false
+                    zoomScale = 0f
                     flipCamera(lifecycleOwner)
                 }) {
                 Icon(
@@ -162,7 +189,6 @@ fun CameraPreview() {
         }
     }
 }
-
 
 @Composable
 fun BottomControls(singleMediaPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>) {
