@@ -32,6 +32,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import com.fdev.fedra.ui.theme.bounceClick
 import com.google.common.util.concurrent.ListenableFuture
 
 private lateinit var preview: Preview
@@ -156,7 +157,8 @@ fun CameraPreview() {
             Button(
                 modifier = Modifier
                     .fillMaxHeight(0.63f)
-                    .fillMaxWidth(0.22f),
+                    .fillMaxWidth(0.22f)
+                    .bounceClick(),
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
                 contentPadding = ButtonDefaults.ContentPadding,
